@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: docker.io/talhazafarsb1/lms:v1
+          ports:
+            - containerPort: 9000
+          env:
+            - name: DB_HOST
+              value: mysql
+            - name: DB_PORT
+              value: "33060"
+            - name: DB_DATABASE
+              value: db_lms
+            - name: DB_USERNAME
+              value: root
+            - name: DB_PASSWORD
+              value: '!@bugdeaL3r'
+          volumeMounts:
+            - name: app-code
+              mountPath: /var/www/html
+      volumes:
+        - name: app-code
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+spec:
+  selector:
+    app: app
+  ports:
+    - port: 9000
+      targetPort: 9000
