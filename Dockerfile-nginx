@@ -1,0 +1,17 @@
+FROM nginx:alpine
+
+# Remove default config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy our custom Nginx config
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Copy Laravel app static files (e.g. public) for deployment
+COPY . /var/www/html
+
+# Ensure permissions are correct
+RUN chown -R nginx:nginx /var/www/html
+
+EXPOSE 8081
+
+CMD ["nginx", "-g", "daemon off;"]
