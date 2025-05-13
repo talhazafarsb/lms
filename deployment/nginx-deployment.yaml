@@ -14,10 +14,10 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: docker.io/talhazafarsb1/nginx:n1
+          image: docker.io/talhazafarsb1/nginx:n2
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 80
+            - containerPort: 8081
           volumeMounts:
             - mountPath: /var/www/html
               name: app-code
@@ -33,8 +33,8 @@ spec:
   selector:
     app: nginx
   ports:
-    - port: 80
-      targetPort: 80
+    - port: 8081
+      targetPort: 8081
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -45,6 +45,6 @@ spec:
     kind: Service
     name: nginx
   port:
-    targetPort: 80
+    targetPort: 8081
   tls:
     termination: edge

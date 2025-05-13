@@ -29,7 +29,7 @@ services:
     image: nginx
     container_name: nginx
     ports:
-      - "8081:80"
+      - "8081:8081"
     depends_on:
       - app
     networks:

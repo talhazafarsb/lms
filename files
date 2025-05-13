@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
+    nano \
     unzip \
     git \
-    nano \
     curl \
     libzip-dev \
     npm \
@@ -47,20 +47,15 @@ RUN rm /etc/nginx/conf.d/default.conf
 # Copy our custom Nginx config
 COPY default.conf /etc/nginx/conf.d/default.conf
 
-COPY nginx.conf /etc/nginx/nginx.conf
-
 # Copy Laravel app static files (e.g. public) for deployment
 COPY . /var/www/html
 
 # Ensure permissions are correct
-RUN chown -R nginx:nginx /var/www/html && \
-    chmod -R ugo+rwx /var/cache/nginx
-		     
+RUN chmod -R ugo+rwx /var/www/html /var/cache/nginx
+
 EXPOSE 8081
 
 CMD ["nginx", "-g", "daemon off;"]
-
-#CMD ["nginx", "-g", "daemon off; pid /tmp/nginx.pid;"]
 
 *************************************************
 
@@ -93,39 +88,9 @@ server {
 
 *************************************************
 
-nginx.conf
-
-#user  nginx;
-worker_processes  auto;
-
-error_log  /var/log/nginx/error.log warn;
-pid        /tmp/nginx.pid;
-
-events {
-    worker_connections  1024;
-}
-
-http {
-    include       /etc/nginx/mime.types;
-    default_type  application/octet-stream;
-
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
-
-    access_log  /var/log/nginx/access.log  main;
-
-    sendfile        on;
-    keepalive_timeout  65;
-
-    include /etc/nginx/conf.d/*.conf;
-}
-
-*************************************************
-
 docker-compose.yaml
 
-version: '3.8'
+vversion: '3.8'
 
 services:
   app:
@@ -137,7 +102,7 @@ services:
     restart: unless-stopped
     environment:
       DB_HOST: mysql
-      DB_PORT: 3307
+      DB_PORT: 3306
       DB_DATABASE: db_lms
       DB_USERNAME: root
       DB_PASSWORD: '!@bugdeaL3r'
@@ -156,12 +121,11 @@ services:
     image: nginx
     container_name: nginx
     ports:
-      - "8081:80"
+      - "8081:8081"
     depends_on:
       - app
     networks:
       - laravel
-
   db:
     image: mysql:8.0
     container_name: mysql
@@ -170,6 +134,7 @@ services:
       - "3307:3306"
     environment:
       MYSQL_DATABASE: db_lms
+#      MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: '!@bugdeaL3r'
     volumes:
       - dbdata:/var/lib/mysql
@@ -181,18 +146,3 @@ volumes:
 
 networks:
   laravel:
-
-*************************************************
-.env in my app containe
-
-
-DB_CONNECTION=mysql
-DB_HOST=mysql
-DB_PORT=3306
-DB_DATABASE=db_lms
-DB_USERNAME=root
-DB_PASSWORD=!@bugdeaL3r
-
-i am unable to connect to db container 
-i can access my db container using docker exec -it mysql mysql -u root -p with '!@bugdeaL3r' password
-but i am unable to migrate tables using my enironment
