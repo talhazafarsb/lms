@@ -18,12 +18,6 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
-          volumeMounts:
-            - mountPath: /var/www/html
-              name: app-code
-      volumes:
-        - name: app-code
-          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

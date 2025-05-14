@@ -27,13 +27,6 @@ spec:
               value: root
             - name: DB_PASSWORD
               value: '!@bugdeaL3r'
-          workingDir: /var/www/html
-          volumeMounts:
-            - mountPath: /var/www/html
-              name: app-code
-      volumes:
-        - name: app-code
-          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
