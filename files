@@ -45,6 +45,7 @@ FROM nginx:alpine
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy our custom Nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY default.conf /etc/nginx/conf.d/default.conf
 
 # Copy Laravel app static files (e.g. public) for deployment
@@ -87,10 +88,42 @@ server {
 }
 
 *************************************************
+nginx.conf
+
+
+#user  nginx;
+worker_processes  auto;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/cache/nginx/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    keepalive_timeout  65;
+    client_max_body_size 100M;
+
+    include /etc/nginx/conf.d/*.conf;
+}
+
+
+*************************************************
 
 docker-compose.yaml
 
-vversion: '3.8'
+version: '3.8'
 
 services:
   app:
@@ -146,3 +179,60 @@ volumes:
 
 networks:
   laravel:
+
+
+i am facing an issues when i create containers using these file in my local environment these containers created and works fine. and when i pull theses containers in onther OS theses containers also works fine there, im my local environment and other OS but when i deploy in openshift environment with following deployment file files are not baked into it when i access nginx pod route it says file not found when i troubleshoot root cause i found no data baked into /var/www/html dierctory
+
+app-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: docker.io/talhazafarsb1/app:n3
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_HOST
+              value: mysql
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: db_lms
+            - name: DB_USERNAME
+              value: root
+            - name: DB_PASSWORD
+              value: '!@bugdeaL3r'
+          workingDir: /var/www/html
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: app-code
+      volumes:
+        - name: app-code
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+spec:
+  selector:
+    app: app
+  ports:
+    - port: 9000
+      targetPort: 9000
+
+*************************************************
+
+db-deployment.yaml
