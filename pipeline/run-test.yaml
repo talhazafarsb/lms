@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: run-php-tests
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: php-test
+      image: php:8.0
+      workingDir: /workspace/source
+      script: |
+        php artisan test || true
+        ls -a storage/logs

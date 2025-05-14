@@ -1,0 +1,41 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: lms-pipeline
+spec:
+  params:
+    - name: repo-url
+      type: string
+    - name: revision
+      type: string
+      default: "tekton"
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: clone-repo
+      taskRef:
+        name: custom-git-clone
+      params:
+        - name: url
+          value: $(params.repo-url)
+        - name: revision
+          value: $(params.revision)
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+
+    - name: install-composer
+      runAfter: [clone-repo]
+      taskRef:
+        name: composer-install
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    - name: run-tests
+      runAfter: [install-composer]
+      taskRef:
+        name: run-php-tests
+      workspaces:
+        - name: source
+          workspace: shared-workspace

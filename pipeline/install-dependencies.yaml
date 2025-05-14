@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: composer-install
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: composer-install
+      image: php:8.0
+      workingDir: /workspace/source
+      script: |
+        apt-get update && apt-get install -y unzip git zip curl
+        curl -sS https://getcomposer.org/installer | php
+        php composer.phar install
+        ls -a

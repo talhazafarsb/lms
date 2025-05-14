@@ -183,6 +183,27 @@ networks:
 
 i am facing an issues when i create containers using these file in my local environment these containers created and works fine. and when i pull theses containers in onther OS theses containers also works fine there, im my local environment and other OS but when i deploy in openshift environment with following deployment file files are not baked into it when i access nginx pod route it says file not found when i troubleshoot root cause i found no data baked into /var/www/html dierctory
 
+
+talha@Talha-VM:/var/www/laravel-lms$ oc get po
+NAME                     READY   STATUS    RESTARTS   AGE
+app-6d5647767d-7sq8w     1/1     Running   0          7m35s
+mysql-64c95c9cb5-v2whx   1/1     Running   0          7m34s
+nginx-58489468c4-g74s6   1/1     Running   0          7m32s
+talha@Talha-VM:/var/www/laravel-lms$ oc exec -it app-6d5647767d-7sq8w -- /bin/bash
+1008910000@app-6d5647767d-7sq8w:/var/www/html$ ls -a
+.  ..
+1008910000@app-6d5647767d-7sq8w:/var/www/html$ exit
+exit
+talha@Talha-VM:/var/www/laravel-lms$ oc exec -it nginx-58489468c4-g74s6 -- sh
+~ $ cd /var/www/html/
+/var/www/html $ ls -a
+.   ..
+/var/www/html $ exit
+talha@Talha-VM:/var/www/laravel-lms$ 
+
+
+
+
 app-deployment.yaml
 
 apiVersion: apps/v1
@@ -236,3 +257,114 @@ spec:
 *************************************************
 
 db-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: db_lms
+            - name: MYSQL_ROOT_PASSWORD
+              value: '!@bugdeaL3r'
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-storage
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+
+*************************************************
+
+nginx-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: docker.io/talhazafarsb1/nginx:n3
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: app-code
+      volumes:
+        - name: app-code
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+    - port: 8081
+      targetPort: 8081
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nginx
+spec:
+  to:
+    kind: Service
+    name: nginx
+  port:
+    targetPort: 8081
+  tls:
+    termination: edge
+

@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: lms-pipeline-run
+spec:
+  pipelineRef:
+    name: lms-pipeline
+  params:
+    - name: repo-url
+      value: https://github.com/talhazafarsb/lms.git
+    - name: revision
+      value: tekton
+  workspaces:
+    - name: shared-workspace
+      volumeClaimTemplate:
+        metadata:
+          name: pipeline-run-pvc
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
