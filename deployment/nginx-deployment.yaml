@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: docker.io/talhazafarsb1/nginx:n3
+          image: docker.io/talhazafarsb1/nginx:tkn
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081

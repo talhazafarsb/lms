@@ -7,7 +7,7 @@ metadata:
 spec:
   description: |
     This pipeline clones a git repo, builds a Docker image with Kaniko and
-    pushes it to a registry    
+    pushes it to a registry
   params:
   - name: repo-url
     type: string
@@ -32,9 +32,25 @@ spec:
       value: $(params.repo-url)
     - name: revision
       value: $(params.revision)
-  
-  - name: build-push-app
+
+  - name: copy-environment-file
     runAfter: ["fetch-source"]
+    taskSpec:
+      steps:
+      - name: list-files
+        image: alpine
+        script: |
+          #!/bin/sh
+          echo "Listing contents of the cloned repo:"
+          cd $(workspaces.source.path)
+          cp .env.example .env
+          ls -al $(workspaces.source.path)
+    workspaces:
+    - name: source
+      workspace: shared-data
+
+  - name: build-push-app
+    runAfter: ["copy-environment-file"]
     taskRef:
       name: kaniko
     workspaces:
@@ -49,7 +65,7 @@ spec:
       value: 'Dockerfile-app'
     - name: CONTEXT
       value: .
-  
+
   - name: build-push-nginx
     runAfter: ["build-push-app"]
     taskRef:
@@ -67,9 +83,11 @@ spec:
     - name: CONTEXT
       value: .    
 
+
 *********************************************
 
 pipelinerun.yaml
+
 
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
@@ -96,7 +114,7 @@ spec:
   - name: image-reference
     value: docker.io/talhazafarsb1/app:tkn
   - name: revision
-    value: tekton
+    value: tkn-tutorial
   - name: DOCKERFILE
     value: Dockerfile-app
   - name: CONTEXT

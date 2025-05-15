@@ -5,7 +5,7 @@ metadata:
 spec:
   description: |
     This pipeline clones a git repo, builds a Docker image with Kaniko and
-    pushes it to a registry    
+    pushes it to a registry
   params:
   - name: repo-url
     type: string
@@ -31,8 +31,7 @@ spec:
     - name: revision
       value: $(params.revision)
 
-
-  - name: list-cloned-files
+  - name: copy-environment-file
     runAfter: ["fetch-source"]
     taskSpec:
       steps:
@@ -41,15 +40,16 @@ spec:
         script: |
           #!/bin/sh
           echo "Listing contents of the cloned repo:"
+          cd $(workspaces.source.path)
           cp .env.example .env
-          ls -al $(workspaces.source.path)          
+          ls -al $(workspaces.source.path)
+          touch storage/logs/laravel.logs
     workspaces:
     - name: source
       workspace: shared-data
 
-  
   - name: build-push-app
-    runAfter: ["fetch-source"]
+    runAfter: ["copy-environment-file"]
     taskRef:
       name: kaniko
     workspaces:
@@ -64,7 +64,7 @@ spec:
       value: 'Dockerfile-app'
     - name: CONTEXT
       value: .
-  
+
   - name: build-push-nginx
     runAfter: ["build-push-app"]
     taskRef:
