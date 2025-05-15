@@ -1,3 +1,5 @@
+pipeline.yaml
+
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -30,23 +32,6 @@ spec:
       value: $(params.repo-url)
     - name: revision
       value: $(params.revision)
-
-
-  - name: list-cloned-files
-    runAfter: ["fetch-source"]
-    taskSpec:
-      steps:
-      - name: list-files
-        image: alpine
-        script: |
-          #!/bin/sh
-          echo "Listing contents of the cloned repo:"
-          cp .env.example .env
-          ls -al $(workspaces.source.path)          
-    workspaces:
-    - name: source
-      workspace: shared-data
-
   
   - name: build-push-app
     runAfter: ["fetch-source"]
@@ -81,3 +66,38 @@ spec:
       value: 'Dockerfile-nginx'
     - name: CONTEXT
       value: .    
+
+*********************************************
+
+pipelinerun.yaml
+
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: clone-build-push-run-
+spec:
+  pipelineRef:
+    name: clone-build-push
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  - name: docker-credentials
+    secret:
+      secretName: docker-credentials
+  params:
+  - name: repo-url
+    value: https://github.com/talhazafarsb/lms.git
+  - name: image-reference
+    value: docker.io/talhazafarsb1/app:tkn
+  - name: revision
+    value: tekton
+  - name: DOCKERFILE
+    value: Dockerfile-app
+  - name: CONTEXT
+    value: .
