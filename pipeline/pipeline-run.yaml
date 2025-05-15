@@ -10,6 +10,12 @@ spec:
       value: https://github.com/talhazafarsb/lms.git
     - name: revision
       value: tekton
+    - name: image-reference
+      value: docker.io/talhazafarsb1/app:tkn
+    - name: app-image
+      value: docker.io/talhazafarsb1/app:tkn
+    - name: nginx-image
+      value: docker.io/talhazafarsb1/nginx:tkn
   workspaces:
     - name: shared-workspace
       volumeClaimTemplate:
@@ -20,3 +26,6 @@ spec:
           resources:
             requests:
               storage: 1Gi
+    - name: docker-credentials
+      secret:
+         secretName: docker-credentials

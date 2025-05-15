@@ -9,8 +9,15 @@ spec:
     - name: revision
       type: string
       default: "tekton"
+    - name: image-reference
+      type: string
+    - name: app-image
+      type: string
+    - name: nginx-image
+      type: string
   workspaces:
     - name: shared-workspace
+    - name: docker-credentials
   tasks:
     - name: clone-repo
       taskRef:
@@ -39,3 +46,37 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
+
+    - name: build-app
+      runAfter: ["run-tests"]
+      taskRef:
+        name: build-and-push
+      params:
+        - name: IMAGE
+          value: $(params.app-image)
+        - name: DOCKERFILE
+          value: Dockerfile-app
+        - name: CONTEXT
+          value: .
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: dockerConfig
+          workspace: docker-credentials
+
+    - name: build-nginx
+      runAfter: ["build-app"]
+      taskRef:
+        name: build-and-push
+      params:
+        - name: IMAGE
+          value: $(params.nginx-image)
+        - name: DOCKERFILE
+          value: Dockerfile-nginx
+        - name: CONTEXT
+          value: .
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: dockerConfig
+          workspace: docker-credentials

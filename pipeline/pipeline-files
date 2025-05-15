@@ -17,11 +17,9 @@ spec:
     - name: clone
       image: alpine/git
       script: |
-          apk add --no-cache git
-          rm -rf $(workspaces.output.path)/*
-          rm -rf $(workspaces.output.path)/.[!.]* $(workspaces.output.path)/..?*
-          git clone -b $(params.revision) $(params.url) $(workspaces.output.path)
-
+        rm -rf $(workspaces.output.path)/*
+        rm -rf $(workspaces.output.path)/.[!.]* $(workspaces.output.path)/..?*
+        git clone -b $(params.revision) $(params.url) $(workspaces.output.path)
 
 **************************************************
 
@@ -89,12 +87,10 @@ spec:
       env:
         - name: DOCKER_CONFIG
           value: /tekton/home/.docker
-      script: |
-        /kaniko/executor \
-          --dockerfile=$(workspaces.source.path)/$(params.DOCKERFILE) \
-          --context=$(workspaces.source.path)/$(params.CONTEXT) \
-          --destination=$(params.IMAGE)
-
+      args:
+        - "--dockerfile=$(workspaces.source.path)/$(params.DOCKERFILE)"
+        - "--context=$(workspaces.source.path)/$(params.CONTEXT)"
+        - "--destination=$(params.IMAGE)"
 
 **************************************************
 
@@ -112,7 +108,7 @@ spec:
       type: string
       default: "tekton"
     - name: image-reference
-      type: string  
+      type: string
     - name: app-image
       type: string
     - name: nginx-image
@@ -148,7 +144,7 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
-    
+
     - name: build-app
       runAfter: ["run-tests"]
       taskRef:
@@ -183,8 +179,10 @@ spec:
         - name: dockerConfig
           workspace: docker-credentials
 
+
 **************************************************
 
+pipeline-run.yaml
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
@@ -217,3 +215,19 @@ spec:
       secret:
          secretName: docker-credentials
 
+
+i create credentials using 
+oc create secret docker-registry regcred \
+  --docker-username=talhazafarsb1 \
+  --docker-password='!@bugdeaL3r' \
+  --docker-email=talha.zafarsb@gmail.com
+and also linked and verify with pipeline service account but when i check events of build-app pod i found that i am getting an error that
+Events:
+  Type     Reason                  Age                  From                     Message
+  ----     ------                  ----                 ----                     -------
+  Normal   Scheduled               16m                  default-scheduler        Successfully assigned talha-zafar-dev/lms-pipeline-run-b9826x-build-app-pod to ip-10-0-0-173.ec2.internal
+  Warning  FailedAttachVolume      16m                  attachdetach-controller  Multi-Attach error for volume "pvc-6861777d-77a4-486f-b3e7-47682be7cd4b" Volume is already used by pod(s) lms-pipeline-run-b9826x-run-tests-pod
+  Normal   SuccessfulAttachVolume  16m                  attachdetach-controller  AttachVolume.Attach succeeded for volume "pvc-6861777d-77a4-486f-b3e7-47682be7cd4b"
+  Warning  FailedMount             2m2s (x15 over 16m)  kubelet                  MountVolume.SetUp failed for volume "ws-2032d" : secret "docker-credentials" not found
+
+  docker-credentials on other hand my credentials name was regcred
