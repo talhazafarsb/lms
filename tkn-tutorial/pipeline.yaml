@@ -5,16 +5,18 @@ metadata:
 spec:
   description: |
     This pipeline clones a git repo, builds a Docker image with Kaniko and
-    pushes it to a registry
+    pushes it to a registry    
   params:
   - name: repo-url
     type: string
-  - name: image-reference
-    type: string
   - name: revision
     type: string
+  - name: image-reference
+    type: string
   - name: DOCKERFILE
+    type: string
   - name: CONTEXT
+    type: string
   workspaces:
   - name: shared-data
   - name: docker-credentials
@@ -31,25 +33,16 @@ spec:
     - name: revision
       value: $(params.revision)
 
-  - name: copy-environment-file
+  - name: copy-environment
     runAfter: ["fetch-source"]
-    taskSpec:
-      steps:
-      - name: list-files
-        image: alpine
-        script: |
-          #!/bin/sh
-          echo "Listing contents of the cloned repo:"
-          cd $(workspaces.source.path)
-          cp .env.example .env
-          ls -al $(workspaces.source.path)
-          touch storage/logs/laravel.logs
+    taskRef:
+      name: copy-environment
     workspaces:
     - name: source
       workspace: shared-data
 
   - name: build-push-app
-    runAfter: ["copy-environment-file"]
+    runAfter: ["copy-environment"]
     taskRef:
       name: kaniko
     workspaces:
@@ -61,7 +54,7 @@ spec:
     - name: IMAGE
       value: docker.io/talhazafarsb1/app:tkn
     - name: DOCKERFILE
-      value: 'Dockerfile-app'
+      value: "Dockerfile-app"
     - name: CONTEXT
       value: .
 
@@ -78,6 +71,6 @@ spec:
     - name: IMAGE
       value: docker.io/talhazafarsb1/nginx:tkn
     - name: DOCKERFILE
-      value: 'Dockerfile-nginx'
+      value: "Dockerfile-nginx"
     - name: CONTEXT
-      value: .    
+      value: .

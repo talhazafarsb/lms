@@ -27,6 +27,7 @@ COPY . /var/www/html
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R ugo+rwx /var/www/html/ && \                    #change for composer install in tekton create container
     chmod -R ugo+rwx storage/ storage/logs/ bootstrap/cache/ .env
 
 # Expose port

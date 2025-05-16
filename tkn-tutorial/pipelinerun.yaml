@@ -20,10 +20,10 @@ spec:
   params:
   - name: repo-url
     value: https://github.com/talhazafarsb/lms.git
-  - name: image-reference
-    value: docker.io/talhazafarsb1/app:tkn
   - name: revision
     value: tkn-tutorial
+  - name: image-reference
+    value: docker.io/talhazafarsb1/app:tkn
   - name: DOCKERFILE
     value: Dockerfile-app
   - name: CONTEXT

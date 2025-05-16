@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: copy-environment
+spec:
+  description: Read and display README file.
+  workspaces:
+  - name: source
+  steps:
+  - name: read
+    image: alpine:latest
+    script: |
+      #!/usr/bin/env sh
+      echo "copy environment file"
+      cd $(workspaces.source.path)
+      cp .env.example .env
+      ls -a $(workspaces.source.path)
