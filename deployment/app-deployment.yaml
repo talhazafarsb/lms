@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: docker.io/talhazafarsb1/app:tkn
+          image: docker.io/talhazafarsb1/app:key
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_HOST

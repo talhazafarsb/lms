@@ -23,7 +23,7 @@ spec:
   - name: revision
     value: tkn-tutorial
   - name: image-reference
-    value: docker.io/talhazafarsb1/app:tkn
+    value: docker.io/talhazafarsb1/app:key
   - name: DOCKERFILE
     value: Dockerfile-app
   - name: CONTEXT
