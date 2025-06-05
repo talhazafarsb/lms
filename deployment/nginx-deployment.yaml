@@ -12,12 +12,23 @@ spec:
       labels:
         app: nginx
     spec:
+      serviceAccountName: custom-sa
+      automountServiceAccountToken: false
       containers:
         - name: nginx
-          image: docker.io/talhazafarsb1/nginx:key
+          image: quay.io/talhazafarmlynx/nginx:v5
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+          securityContext:
+            runAsNonRoot: true
 ---
 apiVersion: v1
 kind: Service

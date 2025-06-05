@@ -1,0 +1,72 @@
+FROM php:8.0-fpm-alpine AS builder
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Install system dependencies and PHP extensions
+RUN apk update && apk upgrade && apk add --no-cache \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    libzip-dev \
+    unzip \
+    git \
+    curl \
+    zip \
+    && docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd 
+
+# Install Composer from official image
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy Laravel application code
+COPY . .
+
+# Copy only necessary files for dependency installation
+COPY .env.example .env
+
+# Install PHP dependencies (without dev)
+RUN composer install --optimize-autoloader
+
+# Set permissions for Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache && \
+    chmod -R ug+rwx storage bootstrap/cache
+
+# Generate application key
+RUN php artisan key:generate
+
+#2nd Stage
+FROM php:8.0-fpm-alpine AS production
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Install runtime PHP extensions only (no dev tools, no compilers)
+RUN apk update && apk upgrade && apk add --no-cache \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    libzip-dev \
+    unzip \
+    curl \
+    && docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd \
+    && apk --no-cache --purge del apk-tools
+
+# Add non-root user
+RUN addgroup --system apuser && adduser --system --ingroup apuser appuser
+
+# Copy application from builder stage
+COPY --from=builder /var/www/html /var/www/html
+
+# Set permissions
+RUN chown -R appuser:apuser /var/www/html
+
+# Use non-root user
+USER appuser
+
+# Expose port
+EXPOSE 9000
+
+# Start PHP-FPM
+CMD ["php-fpm"]

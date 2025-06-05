@@ -4,7 +4,10 @@ FROM php:8.0-fpm
 WORKDIR /var/www/html
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+    apt-utils \
+    dpkg \
     build-essential \
     libpng-dev \
     libjpeg-dev \
@@ -19,6 +22,9 @@ RUN apt-get update && apt-get install -y \
     npm \
     && docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd
 
+#add appuser
+RUN addgroup --system apuser && adduser --system --ingroup apuser appuser
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -30,11 +36,13 @@ RUN composer install --no-dev --optimize-autoloader
 RUN php artisan key:gen
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/html && \
+RUN chown -R appuser:apuser /var/www/html && \
     chmod -R ugo+rwx /var/www/html storage/ storage/logs/ bootstrap/cache/ .env
 
 
-#later changes (l30, /var/www/html)
+#switch user
+
+USER appuser
 
 # Expose port
 EXPOSE 9000

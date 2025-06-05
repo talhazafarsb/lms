@@ -12,21 +12,53 @@ spec:
       labels:
         app: app
     spec:
+      serviceAccountName: custom-sa
+      automountServiceAccountToken: false
       containers:
         - name: app
-          image: docker.io/talhazafarsb1/app:key
+          image: quay.io/talhazafarmlynx/app:v5
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_HOST
-              value: mysql
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_HOST
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_HOST
+
             - name: DB_PORT
-              value: "3306"
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_HOST
             - name: DB_DATABASE
-              value: db_lms
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_DATABASE
             - name: DB_USERNAME
-              value: root
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_USERNAME
             - name: DB_PASSWORD
-              value: '!@bugdeaL3r'
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_PASSWORD
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+          securityContext:
+            runAsNonRoot: true
 ---
 apiVersion: v1
 kind: Service

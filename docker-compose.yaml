@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile-app
+      dockerfile: Dockerfile-appp
     image: app
     container_name: app
     restart: unless-stopped
@@ -25,7 +25,7 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: Dockerfile-nginx
+      dockerfile: Dockerfile-nginxx
     image: nginx
     container_name: nginx
     ports:

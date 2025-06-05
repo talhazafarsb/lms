@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+#  creationTimestamp: "2025-05-26T07:28:21Z"
+  labels:
+    network-policy-generator.stackrox.io/generated: "true"
+  name: stackrox-generated-nginx
+  namespace: lms
+spec:
+  ingress:
+  - {}
+  podSelector:
+    matchLabels:
+      app: nginx
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+#  creationTimestamp: "2025-05-26T07:28:21Z"
+  labels:
+    network-policy-generator.stackrox.io/generated: "true"
+  name: stackrox-generated-app
+  namespace: lms
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: nginx
+  podSelector:
+    matchLabels:
+      app: app
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+#  creationTimestamp: "2025-05-26T07:28:21Z"
+  labels:
+    network-policy-generator.stackrox.io/generated: "true"
+  name: stackrox-generated-mysql
+  namespace: lms
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql
+  policyTypes:
+  - Ingress

@@ -12,6 +12,8 @@ spec:
       labels:
         app: mysql
     spec:
+      serviceAccountName: custom-sa
+      automountServiceAccountToken: false
       containers:
         - name: mysql
           image: mysql:8.0
@@ -19,12 +21,27 @@ spec:
             - containerPort: 3306
           env:
             - name: MYSQL_DATABASE
-              value: db_lms
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: MYSQL_DATABASE
             - name: MYSQL_ROOT_PASSWORD
-              value: '!@bugdeaL3r'
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: MYSQL_ROOT_PASSWORD
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: mysql-storage
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "300m"
+              memory: "512Mi"
+          securityContext:
+            runAsNonRoot: true
       volumes:
         - name: mysql-storage
           persistentVolumeClaim:
@@ -51,4 +68,5 @@ spec:
   resources:
     requests:
       storage: 1Gi
-
+#  storageClassName: gp3-csi
+  storageClassName: crc-csi-hostpath-provisioner

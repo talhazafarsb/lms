@@ -1,0 +1,18 @@
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  pipelines:
+    - name: forward-audit-logs
+      inputRefs:
+        - audit
+      outputRefs:
+        - external-logging
+  outputs:
+    - name: external-logging
+      type: fluentd
+      url: https://log-endpoint.example.com:9200
+      secret:
+        name: your-secret-name
