@@ -5,3 +5,23 @@ install git clone task using "tkn hub install task git-clone"
 install kaniko task to build and push containers using "tkn hub install task kaniko"
 
 also you have to install web terminal operator to install kaniko and git-clone tasks
+
+before starting  pipeline run you have to create docker credentials 
+
+create yaml file fot docker credentials
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: docker-credentials
+data:
+  config.json:{value}
+
+to get "value" you have to run command 
+
+cat ~/.docker/config.json | base64 -w0
+output
+ewoJImF1dGhzIjogewoJCSJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOiB7CgkJCSJhdXRoIjogImRHRnNhR0Y2WVdaaGNuTmlNVG9oUUdKMVoyUmxZVXd6Y2c9PSIKCQl9LAoJCSJxdWF5LmlvIjogewoJCQkiYXV0aCI6ICJkR0ZzYUdGNllXWmhjbTFzZVc1NE9pRkFZblZuWkdWaFRETnkiCgkJfQoJfQp9
+
+and output is a value of config json data 
+

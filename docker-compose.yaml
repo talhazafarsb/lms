@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-appp
-    image: app
+    image: app                                    #add dockker repository of images:tag and remove build, context and dockerfile
     container_name: app
     restart: unless-stopped
     environment:
@@ -15,7 +15,7 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: '!@bugdeaL3r'
     working_dir: /var/www/html
-    volumes:
+    volumes:                                     #also remove this line remove "volume"
       - .:/var/www/html
     networks:
       - laravel
@@ -26,7 +26,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-nginxx
-    image: nginx
+    image: nginx                                  #do the same for this  remove build, context and dockerfile and add images docker address
     container_name: nginx
     ports:
       - "8081:8081"
@@ -54,3 +54,4 @@ volumes:
 
 networks:
   laravel:
+#for run pushed images to other pc/os
