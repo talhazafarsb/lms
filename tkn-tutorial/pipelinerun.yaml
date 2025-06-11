@@ -21,7 +21,7 @@ spec:
   - name: repo-url
     value: https://github.com/talhazafarsb/lms.git
   - name: revision
-    value: tkn-tutorial
+    value: rhacs
   - name: image-reference
     value: docker.io/talhazafarsb1/app:key
   - name: DOCKERFILE

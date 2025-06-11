@@ -1,0 +1,7 @@
+apply copy-environment task using "oc apply -f copy-environment.yaml
+apply pipeline using "oc apply -f pipeline.yaml"
+create pipeline run using "oc create -f pipelinerun.yaml"
+install git clone task using "tkn hub install task git-clone"
+install kaniko task to build and push containers using "tkn hub install task kaniko"
+
+also you have to install web terminal operator to install kaniko and git-clone tasks

@@ -5,7 +5,7 @@ metadata:
 spec:
   description: |
     This pipeline clones a git repo, builds a Docker image with Kaniko and
-    pushes it to a registry    
+    pushes it to a registry
   params:
   - name: repo-url
     type: string
@@ -52,9 +52,9 @@ spec:
       workspace: docker-credentials
     params:
     - name: IMAGE
-      value: docker.io/talhazafarsb1/app:key
+      value: docker.io/talhazafarsb1/app:key1
     - name: DOCKERFILE
-      value: "Dockerfile-app"
+      value: "Dockerfile-appp"
     - name: CONTEXT
       value: .
 
@@ -69,8 +69,8 @@ spec:
       workspace: docker-credentials
     params:
     - name: IMAGE
-      value: docker.io/talhazafarsb1/nginx:key
+      value: docker.io/talhazafarsb1/nginx:key1
     - name: DOCKERFILE
-      value: "Dockerfile-nginx"
+      value: "Dockerfile-nginxx"
     - name: CONTEXT
       value: .
