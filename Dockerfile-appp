@@ -53,18 +53,16 @@ RUN apk update && apk upgrade && apk add --no-cache \
     && docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath gd \
     && apk --no-cache --purge del apk-tools
 
-# Add non-root user
-#RUN addgroup --system apuser && adduser --system --ingroup apuser appuser
-
 # Copy application from builder stage
 COPY --from=builder /var/www/html /var/www/html
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod -R ugo+rwx /var/www/html storage/ storage/logs/ bootstrap/cache/ .env
+# Set permissions 
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 #only above line newly added
 
-# Use non-root user
+#switch user
 USER www-data
 
 # Expose port
