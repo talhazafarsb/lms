@@ -60,7 +60,9 @@ RUN addgroup --system apuser && adduser --system --ingroup apuser appuser
 COPY --from=builder /var/www/html /var/www/html
 
 # Set permissions
-RUN chown -R appuser:apuser /var/www/html
+RUN chown -R appuser:apuser /var/www/html && \
+    chmod -R ugo+rwx /var/www/html storage/ storage/logs/ bootstrap/cache/ .env
+#only above line newly added
 
 # Use non-root user
 USER appuser
