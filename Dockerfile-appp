@@ -54,13 +54,14 @@ RUN apk update && apk upgrade && apk add --no-cache \
     && apk --no-cache --purge del apk-tools
 
 # Add non-root user
-RUN addgroup --system apuser && adduser --system --ingroup apuser appuser
+#RUN addgroup --system apuser && adduser --system --ingroup apuser appuser
+#RUN addgroup --system www-data && adduser --system --ingroup www-data www-data
 
 # Copy application from builder stage
 COPY --from=builder /var/www/html /var/www/html
 
 # Set permissions
-RUN chown -R appuser:apuser /var/www/html && \
+RUN chown -R www-data:www-data /var/www/html && \
     chmod -R ugo+rwx /var/www/html storage/ storage/logs/ bootstrap/cache/ .env
 #only above line newly added
 
