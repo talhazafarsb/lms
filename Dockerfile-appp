@@ -55,7 +55,6 @@ RUN apk update && apk upgrade && apk add --no-cache \
 
 # Add non-root user
 #RUN addgroup --system apuser && adduser --system --ingroup apuser appuser
-#RUN addgroup --system www-data && adduser --system --ingroup www-data www-data
 
 # Copy application from builder stage
 COPY --from=builder /var/www/html /var/www/html
@@ -66,7 +65,7 @@ RUN chown -R www-data:www-data /var/www/html && \
 #only above line newly added
 
 # Use non-root user
-USER appuser
+USER www-data
 
 # Expose port
 EXPOSE 9000
