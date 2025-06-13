@@ -58,12 +58,7 @@ COPY --from=builder /var/www/html /var/www/html
 
 # Set permissions 
 #RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/.env
-
-#only above line newly added
-
-#switch user
-#USER www-data
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/.env
 
 # Expose port
 EXPOSE 9000
