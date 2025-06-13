@@ -57,13 +57,13 @@ RUN apk update && apk upgrade && apk add --no-cache \
 COPY --from=builder /var/www/html /var/www/html
 
 # Set permissions 
-RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+#RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/.env
 
 #only above line newly added
 
 #switch user
-USER www-data
+#USER www-data
 
 # Expose port
 EXPOSE 9000
