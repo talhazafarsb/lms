@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lms
+  namespace: openshift-gitops
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/talhazafarsb/lms.git
+    targetRevision: rhacs
+    path: deployment/
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: lms
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true

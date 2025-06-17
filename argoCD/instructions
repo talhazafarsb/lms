@@ -1,0 +1,8 @@
+before applying continuous deliver argoCD you have to update adm policy using following command 
+oc adm policy add-cluster-role-to-user cluster-admin -z openshift-gitops-argocd-application-controller -n openshift-gitops
+after updating policy you have to getargoCD dashboard password using following command and default dashboard username is "admin"
+oc get secret/openshift-gitops-cluster -n openshift-gitops -o jsonpath='{.data.admin\.password}' | base64 -d
+
+after doing this you have to apply continuous deliver manifests using below command
+
+oc apply -f application.yaml

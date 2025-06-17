@@ -52,7 +52,7 @@ spec:
       workspace: docker-credentials
     params:
     - name: IMAGE
-      value: docker.io/talhazafarsb1/app:key1
+      value: quay.io/talhazafarmlynx/app:double
     - name: DOCKERFILE
       value: "Dockerfile-appp"
     - name: CONTEXT
@@ -69,7 +69,7 @@ spec:
       workspace: docker-credentials
     params:
     - name: IMAGE
-      value: docker.io/talhazafarsb1/nginx:key1
+      value: quay.io/talhazafarmlynx/nginx:double
     - name: DOCKERFILE
       value: "Dockerfile-nginxx"
     - name: CONTEXT

@@ -14,4 +14,10 @@ spec:
       echo "copy environment file"
       cd $(workspaces.source.path)
       cp .env.example .env
+      echo "before"
+      ls -l .env
+      chmod 775 .env
+      echo "after"
+      ls -l .env
+      echo "Listing files with details:"
       ls -a $(workspaces.source.path)

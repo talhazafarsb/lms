@@ -16,7 +16,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: app
-          image: quay.io/talhazafarmlynx/app:v5
+          image: quay.io/talhazafarmlynx/app:oenv
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_HOST
@@ -29,7 +29,6 @@ spec:
                 secretKeyRef:
                   name: app-secret
                   key: DB_HOST
-
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
