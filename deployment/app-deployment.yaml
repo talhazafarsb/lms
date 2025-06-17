@@ -16,7 +16,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: app
-          image: quay.io/talhazafarmlynx/app:oenv
+          image: quay.io/talhazafarmlynx/app:www-data
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_HOST
