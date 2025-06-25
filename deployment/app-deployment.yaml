@@ -16,14 +16,14 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: app
-          image: quay.io/talhazafarmlynx/app:www-data
+          image: quay.io/talhazafarmlynx/app:pipe
           imagePullPolicy: IfNotPresent
           env:
-            - name: DB_HOST
+            - name: APP_KEY
               valueFrom:
                 secretKeyRef:
                   name: app-secret
-                  key: DB_HOST
+                  key: APP_KEY
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
@@ -33,7 +33,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: app-secret
-                  key: DB_HOST
+                  key: DB_PORT
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
@@ -58,6 +58,18 @@ spec:
               memory: "256Mi"
           securityContext:
             runAsNonRoot: true
+#adding postStart hook to perform post Steps 
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    echo "[postStart] Running Laravel setup..."
+                    php artisan config:clear && \
+                    php artisan config:cache && \
+                    php artisan migrate --seed
 ---
 apiVersion: v1
 kind: Service

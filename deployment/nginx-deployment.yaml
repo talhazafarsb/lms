@@ -16,7 +16,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: nginx
-          image: quay.io/talhazafarmlynx/nginx:www-data
+          image: quay.io/talhazafarmlynx/nginx:pipe
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
